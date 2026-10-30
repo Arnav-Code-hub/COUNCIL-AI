@@ -74,6 +74,24 @@ Do not silently rewrite these judgments or claim student readiness from structur
 completion. Comparing a more capable model and collecting faculty decisions are
 the next quality tasks; further prompt tuning alone is not proof of reliability.
 
+Provider retry and second gemini-3.6-flash comparison (30 October 2026, 15:02 UTC):
+- The single permitted transient retry previously waited a fixed 1 second, which an
+  overloaded (503) or rate-limited (429) model rarely survives. It now waits 5 s or
+  the provider's RetryInfo hint, capped at 30 s, plus up to 25% jitter, following
+  Google's published 429/503 backoff guidance. Still at most two requests per
+  reviewer and ten per assessment; non-transient errors are not retried. Seven new
+  regression tests; 57 backend tests pass.
+- Hypothesis tested: the first 3.6 failure was a brief overload. One bounded
+  synthetic run (stop at the first incomplete case): Evidence 45.96 s, Engineer
+  completed at 59.87 s, Sceptic HTTP 503, retry after backoff HTTP 503; incomplete
+  at 77.58 s. Remaining three cases not submitted. Private manifest:
+  private/calibration-live/gemini-3.6-flash-20261030T150238Z/manifest.json.
+- Conclusion: on this key, gemini-3.6-flash overload is sustained, not a one-second
+  blip. No complete 3.6 report or quality comparison exists. Google currently
+  recommends gemini-3.5-flash-lite or gemini-3.8-flash for new projects; 3.8 still
+  returned HTTP 504 on minimal requests earlier the same day. Do not keep spending
+  calls on 3.6 without a new hypothesis (for example a paid-tier key or another time).
+
 Visual inspection of 41 pages across the eight first/third-run PDFs found no
 clipping, overlap or unreadable references/footers. Minor pagination limitations
 remain: an isolated citation or a short reference-resolution section can move to

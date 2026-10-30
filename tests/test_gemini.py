@@ -141,13 +141,54 @@ def test_invalid_output_is_rejected_without_retry(response):
 def test_retry_once_for_transient_timeout():
     fake = FakeFactory([httpx.ReadTimeout("timeout"), valid_response()])
     sleeps = []
-    result = GeminiReviewer(settings(), client_factory=fake, sleep=sleeps.append).review(
-        "evidence", inventory()
-    )
+    result = GeminiReviewer(
+        settings(), client_factory=fake, sleep=sleeps.append, jitter=lambda: 0.0
+    ).review("evidence", inventory())
     assert result.reviewer == "evidence"
     assert len(fake.requests) == 2
-    assert sleeps == [1]
+    assert sleeps == [5.0]
     assert fake.closed == 1
+
+
+def overloaded(code, retry_delay=None):
+    body = {"error": {"code": code, "message": "temporary"}}
+    if retry_delay:
+        body["error"]["details"] = [
+            {"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": retry_delay}
+        ]
+    return errors.APIError(code, body)
+
+
+@pytest.mark.parametrize(
+    ("error", "jitter", "expected"),
+    [
+        (overloaded(503), 0.0, 5.0),
+        (overloaded(503), 0.999, 5.0 * 1.24975),
+        (overloaded(429, "12.5s"), 0.0, 12.5),
+        (overloaded(429, "3s"), 0.0, 5.0),
+        (overloaded(429, "600s"), 0.0, 30.0),
+        (overloaded(429, "soon"), 0.0, 5.0),
+    ],
+)
+def test_single_retry_backs_off_and_honours_provider_hint(error, jitter, expected):
+    fake = FakeFactory([error, valid_response()])
+    sleeps = []
+    GeminiReviewer(
+        settings(), client_factory=fake, sleep=sleeps.append, jitter=lambda: jitter
+    ).review("evidence", inventory())
+    assert sleeps == [pytest.approx(expected)]
+    assert len(fake.requests) == 2
+
+
+def test_retry_wait_is_bounded_with_maximum_jitter():
+    fake = FakeFactory([overloaded(429, "9999s"), overloaded(429, "9999s")])
+    sleeps = []
+    with pytest.raises(errors.APIError):
+        GeminiReviewer(
+            settings(), client_factory=fake, sleep=sleeps.append, jitter=lambda: 0.999999
+        ).review("evidence", inventory())
+    assert len(sleeps) == 1 and sleeps[0] <= 30.0 * 1.25
+    assert len(fake.requests) == 2
 
 
 def test_timeout_after_two_requests_is_propagated():
