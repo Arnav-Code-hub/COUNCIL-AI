@@ -97,6 +97,13 @@ Provider retry and second gemini-3.6-flash comparison (30 October 2026, 15:02 UT
   SHA-256 9434e987...ccf05) adds FACULTY-DECISIONS.md asking the reviewer to rule
   on each of the three Moderate issues above. v1 is preserved unchanged. Any prompt
   1.3 change should follow those recorded decisions; no faculty decision exists yet.
+- Demo review (developer, not faculty; 30 October 2026, recorded in chat): issue 1
+  error (should be contradicted, Moderate); issue 2 fair suggestion that should be
+  framed as outside the claim (Nitpick); issue 3 error (Moderate). Decision: approve
+  for a hackathon demo only, with issues 1 and 3 known and unfixed. This is NOT
+  faculty approval or a student pilot. The hosted demo sets
+  COUNCIL_LIVE_QUALITY_APPROVED=true on that basis only. Real student use still
+  requires a named faculty review and a prompt revision for issues 1 and 3.
 
 Visual inspection of 41 pages across the eight first/third-run PDFs found no
 clipping, overlap or unreadable references/footers. Minor pagination limitations
