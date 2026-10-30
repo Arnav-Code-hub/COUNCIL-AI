@@ -1,0 +1,26 @@
+import {test,expect} from "@playwright/test";
+test("sample to PDF, persisted history, responsive layout",async({page})=>{
+ const errors:string[]=[];
+ page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("/");
+ await expect(page.getByText("Simulation workspace")).toBeVisible();
+ await page.getByRole("button",{name:"Load example"}).click();
+ await page.getByRole("button",{name:/Generate council report/}).click();
+ await expect(page.getByRole("link",{name:"Download PDF"})).toBeVisible({timeout:30000});
+ await expect(page.getByText("5/5 reviewers complete",{exact:false})).toBeVisible();
+ const downloadPromise=page.waitForEvent("download");
+ await page.getByRole("link",{name:"Download PDF"}).click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/^council-.*\.pdf$/);
+ await page.reload();
+ await page.getByRole("button",{name:/Pump Watch: early maintenance alerts/}).first().click();
+ await expect(page.getByRole("link",{name:"Download PDF"})).toBeVisible();
+ await page.screenshot({path:"../output/screenshots/report-desktop.png",fullPage:true});
+ await page.setViewportSize({width:375,height:812});
+ await page.getByRole("button",{name:/New assessment/}).click();
+ await expect(page.getByLabel("Project title",{exact:true})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Pump Watch: early maintenance alerts/}).first()).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.screenshot({path:"../output/screenshots/mobile.png",fullPage:true});
+ expect(errors).toEqual([]);
+});

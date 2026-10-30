@@ -1,0 +1,13 @@
+services:
+  council:
+    build: .
+    ports:
+      - "127.0.0.1:8090:8090"
+    environment:
+      COUNCIL_MODE: simulation
+      COUNCIL_TRUST_LOOPBACK_PROXY: 'true'
+    volumes:
+      - council-private:/data
+    restart: unless-stopped
+volumes:
+  council-private:
