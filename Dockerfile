@@ -19,4 +19,5 @@ RUN useradd --create-home council && mkdir /data && chown council:council /data
 USER council
 ENV COUNCIL_DATA_DIR=/data
 EXPOSE 8090
-CMD ["uvicorn","council.main:create_app","--factory","--host","0.0.0.0","--port","8090","--workers","1"]
+# Hosts such as Render assign the listening port through PORT; local Docker keeps 8090.
+CMD ["sh","-c","exec uvicorn council.main:create_app --factory --host 0.0.0.0 --port ${PORT:-8090} --workers 1"]

@@ -1,0 +1,30 @@
+# Free, short-lived hackathon demo on Render. See docs/operations.md
+# ("Free hackathon demo on Render") for the limits this accepts.
+services:
+  - type: web
+    name: council-ai
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      # Starts as a labelled simulation; switch to gemini only after the demo review.
+      - key: COUNCIL_MODE
+        value: simulation
+      - key: COUNCIL_LIVE_QUALITY_APPROVED
+        value: "false"
+      # Random secret JanMaang must send as X-Council-Key. Copy it from the
+      # dashboard into JanMaang's settings; never into a browser.
+      - key: COUNCIL_SERVICE_KEY
+        generateValue: true
+      # The council's own Gemini key, separate from JanMaang's. Entered in the
+      # dashboard only; never committed.
+      - key: COUNCIL_GEMINI_KEY
+        sync: false
+      - key: COUNCIL_GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: COUNCIL_TIMEOUT_SECONDS
+        value: "45"
+      # Free instances have no persistent disk: this is wiped on restart or sleep.
+      - key: COUNCIL_DATA_DIR
+        value: /data
