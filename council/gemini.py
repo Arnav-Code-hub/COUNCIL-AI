@@ -18,6 +18,15 @@ MAX_INPUT_CHARACTERS = 1000000
 TRANSIENT_CODES = {408, 429, 500, 502, 503, 504}
 
 
+def _without_array_maxima(value):
+    # Nested maxima exceed Gemini's schema complexity limit; Pydantic still enforces them.
+    if isinstance(value, dict):
+        return {k: _without_array_maxima(v) for k, v in value.items() if k != "maxItems"}
+    if isinstance(value, list):
+        return [_without_array_maxima(v) for v in value]
+    return value
+
+
 class GeminiReviewer:
     simulated = False
 
@@ -60,9 +69,8 @@ class GeminiReviewer:
         config = types.GenerateContentConfig(
             system_instruction=instruction,
             response_mime_type="application/json",
-            response_json_schema=ReviewerReport.model_json_schema(),
+            response_json_schema=_without_array_maxima(ReviewerReport.model_json_schema()),
             max_output_tokens=6144,
-            temperature=0,
             tools=[],
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )

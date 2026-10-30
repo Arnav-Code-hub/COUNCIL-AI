@@ -143,7 +143,7 @@ def assess(project: Project, provider: ReviewerProvider, progress=None) -> Repor
     return Report(
         simulated=provider.simulated,
         model=provider.model,
-        prompt_version="1.0",
+        prompt_version="1.2",
         summary=(
             "SIMULATION: workflow demonstration; not an evaluation of this project."
             if provider.simulated

@@ -4,6 +4,12 @@ These examples are **uncalibrated review cases**, not an approved benchmark and 
 No human has approved model outputs in this repository. Keep `COUNCIL_LIVE_QUALITY_APPROVED=false`
 for ordinary deployment until a supervising faculty member has completed this review.
 
+Developer calibration on 30 October 2026 established live five-reviewer/PDF
+generation with `gemini-3.5-flash-lite`. Earlier prompt versions failed semantic
+screening despite valid structure. Current prompts are version 1.2; see
+`docs/verification.md` for the actual acceptance state. A successful API call or
+an automated review does not replace the named faculty sign-off below.
+
 ## Controlled acceptance procedure
 
 1. A developer and faculty reviewer arrange a localhost/private calibration session using synthetic cases only.

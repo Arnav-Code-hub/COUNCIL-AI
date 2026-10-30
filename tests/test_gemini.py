@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from council.config import Settings
 from council.engine import SimulatedReviewer, assess
 from council.gemini import GeminiReviewer
-from council.schemas import Project, evidence_inventory
+from council.schemas import Project, ReviewerReport, evidence_inventory
 
 
 def settings():
@@ -99,6 +99,32 @@ def test_schema_safety_timeout_and_evidence_envelope():
     assert fake.closed == 1
 
 
+def test_provider_schema_avoids_nested_array_limit_rejection():
+    fake = FakeFactory([valid_response()])
+    GeminiReviewer(settings(), client_factory=fake).review("evidence", inventory())
+    config = fake.requests[0]["config"]
+    schema = config.response_json_schema
+    assert "maxItems" not in json.dumps(schema)
+    assert schema["required"] == ["reviewer", "strengths", "issues", "limitations"]
+    assert schema["$defs"]["Issue"]["properties"]["evidence"]["minItems"] == 1
+    assert schema["$defs"]["EvidenceRef"]["properties"]["evidence_id"]["pattern"]
+    assert ReviewerReport.model_json_schema()["properties"]["issues"]["maxItems"] == 15
+    assert config.temperature is None
+
+
+@pytest.mark.parametrize("section", ["strengths", "issues", "limitations", "references"])
+def test_provider_schema_simplification_does_not_relax_output_limits(section):
+    response = json.loads(valid_response())
+    if section == "references":
+        response["issues"][0]["evidence"] *= 11
+    else:
+        response[section] *= 16
+    fake = FakeFactory([json.dumps(response)])
+    with pytest.raises(ValidationError):
+        GeminiReviewer(settings(), client_factory=fake).review("evidence", inventory())
+    assert len(fake.requests) == 1
+
+
 @pytest.mark.parametrize(
     "response",
     [None, "", "not json", "{}", "x" * 100001],
@@ -167,6 +193,7 @@ def test_all_reviewers_have_distinct_focus_and_maximum_ten_requests():
     assert len(fake.requests) == 10
     instructions = [r["config"].system_instruction for r in fake.requests[::2]]
     assert len(set(instructions)) == 5
+    assert all(f"version {report.prompt_version}." in instruction for instruction in instructions)
     assert all(r["config"].response_json_schema is not None for r in fake.requests)
 
 

@@ -1,4 +1,14 @@
 # Implementation ledger
+Current checkpoint, 30 October 2026: resumed by the user. The private COUNCIL-AI
+repository is pushed; its initial GitHub CI passed. Standalone backend: 50 tests
+pass. Genuine five-reviewer synthetic generation and PDF now work with
+gemini-3.5-flash-lite after isolating and fixing nested provider schema maxima.
+Prompts are version 1.2 following observed semantic calibration failures.
+Twelve synthetic assessments completed (60 reviewer outputs and 60 PDF pages);
+semantic screening still found an inconsistent claim status. Faculty approval, production
+deployment and real JanMaang delivery remain pending. Simulation stays enabled.
+This checkpoint supersedes historical pause/status notes below.
+
 Plan: user-approved Independent AI Council, 2026-10-30.
 Ruling: separate repository in the writable visualization workspace, outside both Hacktober Git roots; no source copied from ZIP.
 Ruling: localhost standalone app is a single-user workspace; external hosting requires service authentication and JanMaang-proxied access.
