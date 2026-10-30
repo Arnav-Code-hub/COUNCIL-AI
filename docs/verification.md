@@ -91,6 +91,12 @@ Provider retry and second gemini-3.6-flash comparison (30 October 2026, 15:02 UT
   recommends gemini-3.5-flash-lite or gemini-3.8-flash for new projects; 3.8 still
   returned HTTP 504 on minimal requests earlier the same day. Do not keep spending
   calls on 3.6 without a new hypothesis (for example a paid-tier key or another time).
+- Decision (user, 30 October 2026): continue with gemini-3.5-flash-lite and obtain
+  named faculty review. Local bundle v2 (ignored output,
+  output/calibration/synthetic-live-calibration-2026-10-30-v2.zip, 40 files,
+  SHA-256 9434e987...ccf05) adds FACULTY-DECISIONS.md asking the reviewer to rule
+  on each of the three Moderate issues above. v1 is preserved unchanged. Any prompt
+  1.3 change should follow those recorded decisions; no faculty decision exists yet.
 
 Visual inspection of 41 pages across the eight first/third-run PDFs found no
 clipping, overlap or unreadable references/footers. Minor pagination limitations
