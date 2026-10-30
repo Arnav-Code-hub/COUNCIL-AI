@@ -1,4 +1,4 @@
-# AI Council
+# COUNCIL-AI
 Independent student-project review workspace. Five perspectives examine findings,
 methods and evidence and produce a detailed, evidence-linked PDF. No grades,
 badges, automatic approvals, or execution of uploaded source code.
