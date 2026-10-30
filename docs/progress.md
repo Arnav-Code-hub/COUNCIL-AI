@@ -1,5 +1,5 @@
 # Implementation ledger
-Current checkpoint, 30 October 2026: resumed by the user. The private COUNCIL-AI
+Current checkpoint, 30 October 2026: resumed by the user. The COUNCIL-AI
 repository is pushed; its initial GitHub CI passed. Standalone backend: 50 tests
 pass. Genuine five-reviewer synthetic generation and PDF now work with
 gemini-3.5-flash-lite after isolating and fixing nested provider schema maxima.
